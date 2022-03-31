@@ -132,10 +132,13 @@ Adafruit_NeoPixel SmartLEDs(2, 25, NEO_GRB + NEO_KHZ800);
 
 //-------------------- Added Variables --------------------
 
+#include <Servo.h>
+
 // 1 - forward, 2 - left, 3 - right, 4 - reverse
 
 int state = 0;
 
+//Limit Switches
 const int limitSwitchFront = 15;
 const int limitSwitchSideA = 2;
 const int limitSwitchSideB = 4;
@@ -143,6 +146,16 @@ const int limitSwitchSideB = 4;
 bool limitSwitchFrontState = false;
 bool limitSwitchSideAState = false;
 bool limitSwitchSideBState = false;
+
+
+//Servos
+int servoInterval = 5;
+
+int rightServoPin = 17;
+int leftServoPin = 18;
+
+Servo rightServo;
+Servo leftServo;
 
 void setup() {
    Serial.begin(115200); 
@@ -175,6 +188,12 @@ void setup() {
   pinMode(limitSwitchFront, INPUT_PULLUP);
   pinMode(limitSwitchSideA, INPUT_PULLUP);
   pinMode(limitSwitchSideB, INPUT_PULLUP);
+
+  rightServo.attach(rightServoPin);
+  leftServo.attach(leftServoPin);
+
+  rightServo.write(90);
+  leftServo.write(90);
   //-------------------- Our Code --------------------//
 
    SmartLEDs.begin();                          // Initialize Smart LEDs object (required)
@@ -271,11 +290,8 @@ void loop(){
     {
       
       if(btRun){
-       CR1_ulMotorTimerNow = millis();
-       if(CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime){
 
        //-------------------- Our Code --------------------//
-
        if (!limitSwitchFrontState && !limitSwitchSideAState && !limitSwitchSideBState){
         state = 1;
        }
@@ -306,12 +322,23 @@ void loop(){
         MoveTo(2, 250, 250);
        }else if (state == 5){
         move(0);
+        CR1_ulMotorTimerNow = millis();
+        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
+          CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
+          CR1_uiMotorRunTime = 2000;
+          
+          rightServo.write(rightServo.read() + servoInterval);
+          leftServo.write(leftServo.read() + servoInterval);
+        }
        }
-
-
+       //-------------------- Our Code --------------------//
        
+//       CR1_ulMotorTimerNow = millis();
+//       if(CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime){
 
-        
+
+
+      
 //         switch(ucMotorStateIndex)
 //         {
 //          case 0:
@@ -433,7 +460,7 @@ void loop(){
 //            break;
 //          }
 //         }
-        }
+//        }
       }
       CR1_ucMainTimerCaseCore1 = 1;
       
@@ -494,13 +521,13 @@ void loop(){
     case 7: 
     {
        if (CR1_ui8IRDatum == 0x55) {                // if proper character is seen
-         SmartLEDs.setPixelColor(0,0,25,0);         // make LED1 green with 10% intensity
+         SmartLEDs.setPixelColor(0,25,0,0);         // make LED1 green with 10% intensity
        }
        else if (CR1_ui8IRDatum == 0x41) {           // if "hit" character is seen
          SmartLEDs.setPixelColor(0,25,0,25);        // make LED1 purple with 10% intensity
        }
        else {                                       // otherwise
-         SmartLEDs.setPixelColor(0,25,0,0);         // make LED1 red with 10% intensity
+         SmartLEDs.setPixelColor(0,0,25,0);         // make LED1 red with 10% intensity
        }
        SmartLEDs.show();                            // send updated colour to LEDs
           
