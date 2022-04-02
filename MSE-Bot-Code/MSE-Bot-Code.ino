@@ -43,18 +43,18 @@
 //Pin assignments
 const int ciHeartbeatLED = 2;
 const int ciPB1 = 27;     
-const int ciPB2 = 26;      
+//const int ciPB2 = 26;      
 const int ciPot1 = A4;    //GPIO 32  - when JP2 has jumper installed Analog pin AD4 is connected to Poteniometer R1
-const int ciLimitSwitch = 26;
-const int ciIRDetector = 16;
+//const int ciLimitSwitch = 26;
+//const int ciIRDetector = 16;
 const int ciMotorLeftA = 4;
 const int ciMotorLeftB = 5;
 const int ciMotorRightA = 15;
 const int ciMotorRightB = 23;
-const int ciEncoderLeftDir = 18;
-const int ciEncoderLeftPulse = 19;
-const int ciEncoderRightPulse = 14;
-const int ciEncoderRightDir = 13;
+//const int ciEncoderLeftDir = 18;
+//const int ciEncoderLeftPulse = 19;
+//const int ciEncoderRightPulse = 14;
+//const int ciEncoderRightDir = 13;
 const int ciSmartLED = 25;
 const int ciStepperMotorDir = 22;
 const int ciStepperMotorStep = 21;
@@ -132,16 +132,17 @@ Adafruit_NeoPixel SmartLEDs(2, 25, NEO_GRB + NEO_KHZ800);
 
 //-------------------- Added Variables --------------------
 
-#include <Servo.h>
+//#include <Servo.h>
+#include <Stepper.h>
 
 // 1 - forward, 2 - left, 3 - right, 4 - reverse
 
 int state = 0;
 
 //Limit Switches
-const int limitSwitchFront = 15;
-const int limitSwitchSideA = 2;
-const int limitSwitchSideB = 4;
+const int limitSwitchFront = 26;
+const int limitSwitchSideA = 16;
+const int limitSwitchSideB = 13;
 
 bool limitSwitchFrontState = false;
 bool limitSwitchSideAState = false;
@@ -149,17 +150,24 @@ bool limitSwitchSideBState = false;
 
 
 //Servos
-int servoInterval = 5;
+//int servoInterval = 5;
 
-int rightServoPin = 17;
-int leftServoPin = 18;
+//int rightServoPin = 17;
+//int leftServoPin = 18;
 
-Servo rightServo;
-Servo leftServo;
+//Servo rightServo;
+//Servo leftServo;
+
+//Steppers
+//const int stepsPerRevolution = 2048;
+//const int rolePerMinute = 17;
+
+//Stepper rightStepper(stepsPerRevolution, pin, pin, pin, pin);
+//Stepper leftStepper(stepsPerRevolution, pin, pin, pin, pin);
 
 void setup() {
    Serial.begin(115200); 
-   Serial2.begin(2400, SERIAL_8N1, ciIRDetector);  // IRDetector on RX2 receiving 8-bit words at 2400 baud
+//   Serial2.begin(2400, SERIAL_8N1, ciIRDetector);  // IRDetector on RX2 receiving 8-bit words at 2400 baud
    
    Core_ZEROInit();
 
@@ -182,18 +190,21 @@ void setup() {
    setupMotion();
    pinMode(ciHeartbeatLED, OUTPUT);
    pinMode(ciPB1, INPUT_PULLUP);
-   pinMode(ciLimitSwitch, INPUT_PULLUP);
+//   pinMode(ciLimitSwitch, INPUT_PULLUP);
 
   //-------------------- Our Code --------------------//
   pinMode(limitSwitchFront, INPUT_PULLUP);
   pinMode(limitSwitchSideA, INPUT_PULLUP);
   pinMode(limitSwitchSideB, INPUT_PULLUP);
 
-  rightServo.attach(rightServoPin);
-  leftServo.attach(leftServoPin);
+//  rightServo.attach(rightServoPin);
+//  leftServo.attach(leftServoPin);
 
-  rightServo.write(90);
-  leftServo.write(90);
+//  rightServo.write(90);
+//  leftServo.write(90);
+
+//  rightStepper.setSpeed(rolePerMinute);
+//  leftStepper.setSpeed(rolePerMinute);
   //-------------------- Our Code --------------------//
 
    SmartLEDs.begin();                          // Initialize Smart LEDs object (required)
@@ -205,7 +216,7 @@ void loop(){
   //WSVR_BreakPoint(1);
 
    //average the encoder tick times
-   ENC_Averaging();
+//   ENC_Averaging();
 
   int iButtonValue = digitalRead(ciPB1);       // read value of push button 1
   if (iButtonValue != iLastButtonState) {      // if value has changed
@@ -219,8 +230,8 @@ void loop(){
      // only toggle the run condition if the new button state is LOW
      if (iButtonState == LOW)
      {
-       ENC_ClearLeftOdometer();
-       ENC_ClearRightOdometer();
+//       ENC_ClearLeftOdometer();
+//       ENC_ClearRightOdometer();
        btRun = !btRun;
         Serial.println(btRun);
        // if stopping, reset motor states and stop motors
@@ -244,22 +255,22 @@ void loop(){
 // }
 
   //-------------------- Our Code --------------------//
-  if(!digitalRead(limitSwitchFront)){
-    limitSwitchFrontState = true;
-  }else{
+  if(digitalRead(limitSwitchFront)){
     limitSwitchFrontState = false;
+  }else{
+    limitSwitchFrontState = true;
   }
   
-  if(!digitalRead(limitSwitchSideA)){
-    limitSwitchSideAState = true;
-  }else{
+  if(digitalRead(limitSwitchSideA)){
     limitSwitchSideAState = false;
+  }else{
+    limitSwitchSideAState = true;
   }
 
-  if(!digitalRead(limitSwitchSideB)){
-    limitSwitchSideBState = true;
-  }else{
+  if(digitalRead(limitSwitchSideB)){
     limitSwitchSideBState = false;
+  }else{
+    limitSwitchSideBState = true;
   }
   //-------------------- Our Code --------------------//
  
@@ -291,45 +302,61 @@ void loop(){
       
       if(btRun){
 
+//        Serial.print("Front Switch");
+//        Serial.println(limitSwitchFrontState);
+
+//        Serial.print("Side A Switch");
+//        Serial.println(limitSwitchSideAState);
+
+//        Serial.print("Side B Switch");
+//        Serial.println(limitSwitchSideBState);
+
        //-------------------- Our Code --------------------//
        if (!limitSwitchFrontState && !limitSwitchSideAState && !limitSwitchSideBState){
         state = 1;
+        Serial.println("State 1");
        }
        
        if (!limitSwitchFrontState && limitSwitchSideAState && !limitSwitchSideBState){
         state = 2;
+        Serial.println("State 2");
        }
 
        if (!limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
         state = 3;
+        Serial.println("State 3");
        }
 
        if (!limitSwitchFrontState && !limitSwitchSideAState && limitSwitchSideBState){
         state = 4;
+        Serial.println("State 4");
        }
 
        if (limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
         state = 5;
+        Serial.println("State 5");
        }
        
        if (state == 1){
-        MoveTo(1, 200, 250);
+        MoveTo(1, 250, 230);
        }else if (state == 2){
-        MoveTo(1, 250, 250);
+        MoveTo(1, 250, 210);
        }else if (state == 3){
-        MoveTo(1, 250, 250);
+        MoveTo(1, 250, 230);
        }else if (state == 4){
-        MoveTo(2, 250, 250);
+        MoveTo(1, 0, 180);
        }else if (state == 5){
         move(0);
-        CR1_ulMotorTimerNow = millis();
-        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
-          CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
-          CR1_uiMotorRunTime = 2000;
-          
-          rightServo.write(rightServo.read() + servoInterval);
-          leftServo.write(leftServo.read() + servoInterval);
-        }
+//        rightStepper.step(stepsPerRevolution);
+//        rightStepper.step(stepsPerRevolution);
+//        CR1_ulMotorTimerNow = millis();
+//        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
+//          CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
+//          CR1_uiMotorRunTime = 2000;
+//          
+//          rightServo.write(rightServo.read() + servoInterval);
+//          leftServo.write(leftServo.read() + servoInterval);
+//        }
        }
        //-------------------- Our Code --------------------//
        

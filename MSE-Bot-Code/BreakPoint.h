@@ -14,6 +14,8 @@ usage
 
 */
 
+//Commented out ENC (Encoder variabeles) if use encoder un comment 
+
 #ifndef BREAKPOINT_H
 #define BREAKPOINT_H 1
 
@@ -28,24 +30,24 @@ usage
 #define WATCH_VARIABLE_2_TYPE uint8_t
 #define WATCH_VARIABLE_2 CR1_ui8WheelSpeed
 ////
-#define WATCH_VARIABLE_3_NAME "ENC_vi32RightOdometer"
-#define WATCH_VARIABLE_3_TYPE volatile int32_t
-#define WATCH_VARIABLE_3 ENC_vi32RightOdometer
-//
-#define WATCH_VARIABLE_4_NAME "ENC_vi32LeftOdometer"
-#define WATCH_VARIABLE_4_TYPE volatile int32_t
-#define WATCH_VARIABLE_4 ENC_vi32LeftOdometer
+//#define WATCH_VARIABLE_3_NAME "ENC_vi32RightOdometer"
+//#define WATCH_VARIABLE_3_TYPE volatile int32_t
+//#define WATCH_VARIABLE_3 ENC_vi32RightOdometer
+////
+//#define WATCH_VARIABLE_4_NAME "ENC_vi32LeftOdometer"
+//#define WATCH_VARIABLE_4_TYPE volatile int32_t
+//#define WATCH_VARIABLE_4 ENC_vi32LeftOdometer
 
 ////-----------------------------------------------------------
 ////Row 2
 
-#define WATCH_VARIABLE_5_NAME "ENC_vui16LeftEncoderPulseMissed"
-#define WATCH_VARIABLE_5_TYPE volatile uint16_t
-#define WATCH_VARIABLE_5 ENC_vui16LeftEncoderPulseMissed
- 
-#define WATCH_VARIABLE_6_NAME "ENC_vui16RightEncoderPulseMissed"
-#define WATCH_VARIABLE_6_TYPE  volatile uint16_t
-#define WATCH_VARIABLE_6 ENC_vui16RightEncoderPulseMissed
+//#define WATCH_VARIABLE_5_NAME "ENC_vui16LeftEncoderPulseMissed"
+//#define WATCH_VARIABLE_5_TYPE volatile uint16_t
+//#define WATCH_VARIABLE_5 ENC_vui16LeftEncoderPulseMissed
+// 
+//#define WATCH_VARIABLE_6_NAME "ENC_vui16RightEncoderPulseMissed"
+//#define WATCH_VARIABLE_6_TYPE  volatile uint16_t
+//#define WATCH_VARIABLE_6 ENC_vui16RightEncoderPulseMissed
 
 //#define WATCH_VARIABLE_7_NAME ""
 //#define WATCH_VARIABLE_7_TYPE  volatile uint16_t
@@ -59,13 +61,13 @@ usage
 ////Row 3
 
 
-#define WATCH_VARIABLE_9_NAME "ENC_ui32LeftEncoderAveTime;LL1;8000;UL1;400000" //only 6 charting varable allowed, first number is minimun value ; 2nd is maximum value
-#define WATCH_VARIABLE_9_TYPE uint32_t
-#define WATCH_VARIABLE_9 ENC_ui32LeftEncoderAveTime
- 
-#define WATCH_VARIABLE_10_NAME "ENC_ui32RightEncoderAveTime;LL2;8000;UL2;400000" //only 6 charting varable allowed, first number is minimun value ; 2nd is maximum value
-#define WATCH_VARIABLE_10_TYPE uint32_t
-#define WATCH_VARIABLE_10 ENC_ui32RightEncoderAveTime
+//#define WATCH_VARIABLE_9_NAME "ENC_ui32LeftEncoderAveTime;LL1;8000;UL1;400000" //only 6 charting varable allowed, first number is minimun value ; 2nd is maximum value
+//#define WATCH_VARIABLE_9_TYPE uint32_t
+//#define WATCH_VARIABLE_9 ENC_ui32LeftEncoderAveTime
+// 
+//#define WATCH_VARIABLE_10_NAME "ENC_ui32RightEncoderAveTime;LL2;8000;UL2;400000" //only 6 charting varable allowed, first number is minimun value ; 2nd is maximum value
+//#define WATCH_VARIABLE_10_TYPE uint32_t
+//#define WATCH_VARIABLE_10 ENC_ui32RightEncoderAveTime
 
 //#define WATCH_VARIABLE_11_NAME ""
 //#define WATCH_VARIABLE_11_TYPE int32_t

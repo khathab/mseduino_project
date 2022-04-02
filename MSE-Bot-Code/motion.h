@@ -34,9 +34,8 @@ double dRightSpeed;
 
 void setupMotion (void)
 {
-	
+  
   dManualSpeed = 0;
-  dForwardSpeed = 250;  // max 255; min ~150 before motor stall
   dReverseSpeed = 250;
   dLeftSpeed = 170;
   dRightSpeed = 170;
@@ -54,7 +53,7 @@ void setupMotion (void)
   ledcSetup(2, 20000, 8);
   ledcSetup(3, 20000, 8);
   ledcSetup(4, 20000, 8);
- 	
+  
    ucMotion_Direction = 0;
    ucMotion_Speed = 0;
 }

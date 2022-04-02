@@ -7,10 +7,12 @@ Western Engineering base code
 
 */
 
+//Commented out #include(Encoder.h) & ENC_Init() cause not using encoders
+
 #ifndef CORE_ZERO_H
 #define CORE_ZERO_H 1
 
-#include "Encoder.h"
+//#include "Encoder.h"
 #include "MyWEBserver.h"
 #include "BreakPoint.h"
 #include "WDT.h";
@@ -81,7 +83,7 @@ void Core_ZeroCode( void * pvParameters )
    WDT_vfFastWDTWarningCore0[9] = 0;
    WDT_ResetCore0(); 
    
-   ENC_Init();
+  //ENC_Init(); NO ENCODER STUFF 
   //loop function for core 0
   //-------------------------------------------------------------------------------------------
   for(;;)
