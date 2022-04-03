@@ -132,12 +132,12 @@ Adafruit_NeoPixel SmartLEDs(2, 25, NEO_GRB + NEO_KHZ800);
 
 //-------------------- Added Variables --------------------
 
-//#include <Servo.h>
+#include <ESP32Servo.h>
 #include <Stepper.h>
 
 // 1 - forward, 2 - left, 3 - right, 4 - reverse
 
-int state = 0;
+int state = 5;
 
 //Limit Switches
 const int limitSwitchFront = 26;
@@ -150,13 +150,13 @@ bool limitSwitchSideBState = false;
 
 
 //Servos
-//int servoInterval = 5;
+int servoInterval = 10;
 
-//int rightServoPin = 17;
-//int leftServoPin = 18;
+int rightServoPin = 12;
+int leftServoPin = 19;
 
-//Servo rightServo;
-//Servo leftServo;
+Servo rightServo;
+Servo leftServo;
 
 //Steppers
 //const int stepsPerRevolution = 2048;
@@ -197,11 +197,19 @@ void setup() {
   pinMode(limitSwitchSideA, INPUT_PULLUP);
   pinMode(limitSwitchSideB, INPUT_PULLUP);
 
-//  rightServo.attach(rightServoPin);
-//  leftServo.attach(leftServoPin);
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
 
-//  rightServo.write(90);
-//  leftServo.write(90);
+  rightServo.setPeriodHertz(50);
+  leftServo.setPeriodHertz(50);
+
+  rightServo.attach(rightServoPin, 500, 2400);
+  leftServo.attach(leftServoPin, 500, 2400);
+
+  rightServo.write(180);
+  leftServo.write(0);
 
 //  rightStepper.setSpeed(rolePerMinute);
 //  leftStepper.setSpeed(rolePerMinute);
@@ -312,30 +320,30 @@ void loop(){
 //        Serial.println(limitSwitchSideBState);
 
        //-------------------- Our Code --------------------//
-       if (!limitSwitchFrontState && !limitSwitchSideAState && !limitSwitchSideBState){
-        state = 1;
-        Serial.println("State 1");
-       }
-       
-       if (!limitSwitchFrontState && limitSwitchSideAState && !limitSwitchSideBState){
-        state = 2;
-        Serial.println("State 2");
-       }
-
-       if (!limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
-        state = 3;
-        Serial.println("State 3");
-       }
-
-       if (!limitSwitchFrontState && !limitSwitchSideAState && limitSwitchSideBState){
-        state = 4;
-        Serial.println("State 4");
-       }
-
-       if (limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
-        state = 5;
-        Serial.println("State 5");
-       }
+//       if (!limitSwitchFrontState && !limitSwitchSideAState && !limitSwitchSideBState){
+//        state = 1;
+//        Serial.println("State 1");
+//       }
+//       
+//       if (!limitSwitchFrontState && limitSwitchSideAState && !limitSwitchSideBState){
+//        state = 2;
+//        Serial.println("State 2");
+//       }
+//
+//       if (!limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
+//        state = 3;
+//        Serial.println("State 3");
+//       }
+//
+//       if (!limitSwitchFrontState && !limitSwitchSideAState && limitSwitchSideBState){
+//        state = 4;
+//        Serial.println("State 4");
+//       }
+//
+//       if (limitSwitchFrontState && limitSwitchSideAState && limitSwitchSideBState){
+//        state = 5;
+//        Serial.println("State 5");
+//       }
        
        if (state == 1){
         MoveTo(1, 250, 230);
@@ -349,14 +357,14 @@ void loop(){
         move(0);
 //        rightStepper.step(stepsPerRevolution);
 //        rightStepper.step(stepsPerRevolution);
-//        CR1_ulMotorTimerNow = millis();
-//        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
-//          CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
-//          CR1_uiMotorRunTime = 2000;
-//          
-//          rightServo.write(rightServo.read() + servoInterval);
-//          leftServo.write(leftServo.read() + servoInterval);
-//        }
+        CR1_ulMotorTimerNow = millis();
+        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() > 90) && (leftServo.read() < 90)){
+          CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
+          CR1_uiMotorRunTime = 1500;
+          
+          rightServo.write(rightServo.read() - servoInterval); 
+          leftServo.write(leftServo.read() + servoInterval);
+        }
        }
        //-------------------- Our Code --------------------//
        
