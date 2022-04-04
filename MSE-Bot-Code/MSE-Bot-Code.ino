@@ -150,7 +150,7 @@ bool limitSwitchSideBState = false;
 
 
 //Servos
-int servoInterval = 10;
+int servoInterval = 5;
 
 int rightServoPin = 12;
 int leftServoPin = 19;
@@ -319,7 +319,7 @@ void loop(){
 //        Serial.print("Side B Switch");
 //        Serial.println(limitSwitchSideBState);
 
-       //-------------------- Our Code --------------------//
+//       //-------------------- Our Code --------------------//
 //       if (!limitSwitchFrontState && !limitSwitchSideAState && !limitSwitchSideBState){
 //        state = 1;
 //        Serial.println("State 1");
@@ -360,10 +360,10 @@ void loop(){
         CR1_ulMotorTimerNow = millis();
         if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() > 90) && (leftServo.read() < 90)){
           CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
-          CR1_uiMotorRunTime = 1500;
+          CR1_uiMotorRunTime = 500;
           
-          rightServo.write(rightServo.read() - servoInterval); 
           leftServo.write(leftServo.read() + servoInterval);
+          rightServo.write(rightServo.read() - servoInterval); 
         }
        }
        //-------------------- Our Code --------------------//
