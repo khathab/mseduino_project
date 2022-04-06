@@ -1,4 +1,5 @@
 
+
 //MSE 2202 
 //Western Engineering base code
 //2020 05 13 E J Porter
@@ -43,9 +44,9 @@
 //Pin assignments
 const int ciHeartbeatLED = 2;
 const int ciPB1 = 27;     
-const int ciPB2 = 26;      
+const int ciPB2 = 4;      
 const int ciPot1 = A4;    //GPIO 32  - when JP2 has jumper installed Analog pin AD4 is connected to Poteniometer R1
-const int ciLimitSwitch = 26;
+const int ciLimitSwitch = 1;
 const int ciIRDetector = 16;
 const int ciMotorLeftA = 4;
 const int ciMotorLeftB = 5;
@@ -132,7 +133,7 @@ Adafruit_NeoPixel SmartLEDs(2, 25, NEO_GRB + NEO_KHZ800);
 
 //-------------------- Added Variables --------------------
 
-#include <Servo.h>
+//#include <Servo.h>
 
 // 1 - forward, 2 - left, 3 - right, 4 - reverse
 
@@ -151,16 +152,30 @@ bool limitSwitchSideBState = false;
 //Servos
 int servoInterval = 5;
 
-int rightServoPin = 17;
+int rightServoPin = 15;
 int leftServoPin = 18;
 
-Servo rightServo;
-Servo leftServo;
+//Servo rightServo;
+//Servo leftServo;
+
+#define A 25
+#define B 26
+#define C 12
+#define D 16
+ 
+#define NUMBER_OF_STEPS_PER_REV 31
+
 
 void setup() {
    Serial.begin(115200); 
    Serial2.begin(2400, SERIAL_8N1, ciIRDetector);  // IRDetector on RX2 receiving 8-bit words at 2400 baud
-   
+
+   // our code
+  pinMode(A,OUTPUT);
+  pinMode(B,OUTPUT);
+  pinMode(C,OUTPUT);
+  pinMode(D,OUTPUT);
+   // our code
    Core_ZEROInit();
 
    WDT_EnableFastWatchDogCore1();
@@ -189,11 +204,11 @@ void setup() {
   pinMode(limitSwitchSideA, INPUT_PULLUP);
   pinMode(limitSwitchSideB, INPUT_PULLUP);
 
-  rightServo.attach(rightServoPin);
-  leftServo.attach(leftServoPin);
+  //rightServo.attach(rightServoPin);
+ // leftServo.attach(leftServoPin);
 
-  rightServo.write(90);
-  leftServo.write(90);
+ // rightServo.write(90);
+ // leftServo.write(90);
   //-------------------- Our Code --------------------//
 
    SmartLEDs.begin();                          // Initialize Smart LEDs object (required)
@@ -204,6 +219,16 @@ void setup() {
 void loop(){
   //WSVR_BreakPoint(1);
 
+  // our code
+
+int i;
+i=0;
+while(i<NUMBER_OF_STEPS_PER_REV){
+onestep();
+i++;
+}
+
+  // our code
    //average the encoder tick times
    ENC_Averaging();
 
@@ -323,12 +348,13 @@ void loop(){
        }else if (state == 5){
         move(0);
         CR1_ulMotorTimerNow = millis();
-        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
+        if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) ){
+       // if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() < 90) && (leftServo.read() < 90)){
           CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
           CR1_uiMotorRunTime = 2000;
           
-          rightServo.write(rightServo.read() + servoInterval);
-          leftServo.write(leftServo.read() + servoInterval);
+         // rightServo.write(rightServo.read() + servoInterval);
+         // leftServo.write(leftServo.read() + servoInterval);
         }
        }
        //-------------------- Our Code --------------------//
@@ -562,4 +588,39 @@ void loop(){
    // Serial.println((vui32test2 - vui32test1)* 3 );
  }
 
+}
+
+
+void write(int a,int b,int c,int d){
+digitalWrite(A,a);
+digitalWrite(B,b);
+digitalWrite(C,c);
+digitalWrite(D,d);
+}
+
+void onestep(){
+write(1,0,0,0);
+Serial.println("1,0,0,0");
+delay(5);
+write(1,1,0,0);
+Serial.println("1,1,0,0");
+delay(5);
+write(0,1,0,0);
+Serial.println("0,1,0,0");
+delay(5);
+write(0,1,1,0);
+Serial.println("0,1,1,0");
+delay(5);
+write(0,0,1,0);
+Serial.println("0,0,1,0");
+delay(5);
+write(0,0,1,1);
+Serial.println("0,0,1,1");
+delay(5);
+write(0,0,0,1);
+Serial.println("0,0,0,1");
+delay(5);
+write(1,0,0,1);
+Serial.println("1,0,0,1");
+delay(5);
 }
