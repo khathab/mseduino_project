@@ -158,6 +158,16 @@ int leftServoPin = 19;
 Servo rightServo;
 Servo leftServo;
 
+#define D 25
+#define C 17 //
+#define B 22 //
+#define A 21 //
+
+#define NUMBER_OF_STEPS_PER_REV 31
+
+int stepState =0;
+int stepTimeNow;
+int stepTimePrev=0;
 //Steppers
 //const int stepsPerRevolution = 2048;
 //const int rolePerMinute = 17;
@@ -168,7 +178,12 @@ Servo leftServo;
 void setup() {
    Serial.begin(115200); 
 //   Serial2.begin(2400, SERIAL_8N1, ciIRDetector);  // IRDetector on RX2 receiving 8-bit words at 2400 baud
-   
+
+  pinMode(A,OUTPUT);
+  pinMode(B,OUTPUT);
+  pinMode(C,OUTPUT);
+  pinMode(D,OUTPUT);
+  
    Core_ZEROInit();
 
    WDT_EnableFastWatchDogCore1();
@@ -221,12 +236,21 @@ void setup() {
 }
 
 void loop(){
+  
+/*int i;
+i=0;
+while(i<NUMBER_OF_STEPS_PER_REV){
+onestep();
+i++;
+}*/
+  
   //WSVR_BreakPoint(1);
 
    //average the encoder tick times
 //   ENC_Averaging();
 
   int iButtonValue = digitalRead(ciPB1);       // read value of push button 1
+  Serial.println(iButtonValue);
   if (iButtonValue != iLastButtonState) {      // if value has changed
      CR1_ulLastDebounceTime = millis();        // reset the debouncing timer
   }
@@ -358,6 +382,16 @@ void loop(){
 //        rightStepper.step(stepsPerRevolution);
 //        rightStepper.step(stepsPerRevolution);
         CR1_ulMotorTimerNow = millis();
+        stepTimeNow = millis();
+/*        
+int FX;
+FX=0;
+while(FX<NUMBER_OF_STEPS_PER_REV){
+onestep();
+FX++;
+}
+*/
+        
         if ((CR1_ulMotorTimerNow - CR1_ulMotorTimerPrevious >= CR1_uiMotorRunTime) && (rightServo.read() > 90) && (leftServo.read() < 90)){
           CR1_ulMotorTimerPrevious = CR1_ulMotorTimerNow;
           CR1_uiMotorRunTime = 500;
@@ -365,7 +399,43 @@ void loop(){
           leftServo.write(leftServo.read() + servoInterval);
           rightServo.write(rightServo.read() - servoInterval); 
         }
+
+        if(stepTimeNow - stepTimePrev >= 1){
+
+          stepTimePrev = stepTimeNow;
+
+          if(stepState ==0){
+            write(1,0,0,0);
+            stepState=1;
+          }else if (stepState ==1){
+            write(1,1,0,0);
+            stepState=2;
+          }else if (stepState ==2){
+            write(0,1,0,0);
+            stepState=3;
+          }else if (stepState ==3){
+            write(0,1,1,0);
+            stepState=4;
+          }else if (stepState ==4){
+            write(0,0,1,0);
+            stepState=5;
+          }else if (stepState ==5){
+            write(0,0,1,1);
+            stepState=6;
+          }else if (stepState ==6){
+            write(0,0,0,1);
+            stepState=7;
+          }else if (stepState ==7){
+            write(1,0,0,1);
+            stepState=0;
+          }
+        }
+        
        }
+
+
+       
+
        //-------------------- Our Code --------------------//
        
 //       CR1_ulMotorTimerNow = millis();
@@ -597,4 +667,38 @@ void loop(){
    // Serial.println((vui32test2 - vui32test1)* 3 );
  }
 
+}
+
+void write(int a,int b,int c,int d){
+digitalWrite(A,a);
+digitalWrite(B,b);
+digitalWrite(C,c);
+digitalWrite(D,d);
+}
+
+void onestep(){
+write(1,0,0,0);
+Serial.println("1,0,0,0");
+delay(5);
+write(1,1,0,0);
+Serial.println("1,1,0,0");
+delay(5);
+write(0,1,0,0);
+Serial.println("0,1,0,0");
+delay(5);
+write(0,1,1,0);
+Serial.println("0,1,1,0");
+delay(5);
+write(0,0,1,0);
+Serial.println("0,0,1,0");
+delay(5);
+write(0,0,1,1);
+Serial.println("0,0,1,1");
+delay(5);
+write(0,0,0,1);
+Serial.println("0,0,0,1");
+delay(5);
+write(1,0,0,1);
+Serial.println("1,0,0,1");
+delay(5);
 }
